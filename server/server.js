@@ -7,7 +7,8 @@ const cors = require("cors"); // <-- Import
 const connectDB = require("./config/db");
 
 // Import routes
-const courseRoutes = require("./routes/courseRoutes"); // <-- Import
+const courseRoutes = require("./routes/courseRoutes");
+const lessonRoutes = require("./routes/lessonRoutes");
 
 // Connect to Database
 connectDB();
@@ -15,7 +16,7 @@ connectDB();
 const app = express();
 
 // Enable CORS
-app.use(cors()); // <-- Add this
+app.use(cors());
 
 // Body parser middleware
 app.use(express.json());
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 
 // Mount routers
 app.use("/api/courses", courseRoutes);
+app.use("/api/lessons", lessonRoutes);
 
 const PORT = process.env.PORT || 5000;
 

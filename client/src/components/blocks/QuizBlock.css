@@ -1,0 +1,43 @@
+.quiz-block {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.quiz-block h4 {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  color: var(--text-dark);
+}
+
+.quiz-options {
+  list-style: none;
+  padding-left: 0;
+}
+
+.quiz-options li {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+/* This is a temporary style to show the answer */
+/* In a real quiz, you'd hide this and reveal on click */
+.quiz-options li.correct {
+  background-color: #f0fff4; /* Light green */
+  border-color: #9ae6b4;
+  color: #276749;
+  font-weight: 600;
+}
+
+.quiz-answer {
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 16px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
