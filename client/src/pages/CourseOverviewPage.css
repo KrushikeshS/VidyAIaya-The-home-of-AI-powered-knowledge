@@ -46,3 +46,16 @@
 .lessons-list li a:hover {
   color: #2b6cb0; /* Darker blue */
 }
+
+.breadcrumb-link {
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 10px;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: var(--primary);
+}
