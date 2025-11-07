@@ -1,9 +1,10 @@
 const Course = require("../models/courseModel");
 const Module = require("../models/moduleModel");
 const Lesson = require("../models/lessonModel");
-const {generateCourseContent} = require("../services/aiService");
+// Import the specific function we need
+const {generateCourseOutline} = require("../services/aiService");
 
-// @desc    Generate a new course
+// @desc    Generate a new course (OUTLINE ONLY)
 // @route   POST /api/courses/generate
 // @access  Private (will be)
 exports.generateCourse = async (req, res) => {
@@ -14,10 +15,8 @@ exports.generateCourse = async (req, res) => {
   }
 
   try {
-    const aiData = await generateCourseContent(topic);
-
-    // Now, save this structured data to the database
-    // We must do this from the "bottom up" (Lessons -> Modules -> Course)
+    // 1. Call the new OUTLINE generator
+    const aiData = await generateCourseOutline(topic);
 
     let moduleIds = [];
 
@@ -25,9 +24,10 @@ exports.generateCourse = async (req, res) => {
       let lessonIds = [];
 
       for (const lessonData of moduleData.lessons) {
+        // 2. Create lessons with ONLY a title and empty content
         const newLesson = await Lesson.create({
           title: lessonData.title,
-          content: lessonData.content,
+          content: [], // This is the key change!
         });
         lessonIds.push(newLesson._id);
       }
@@ -43,14 +43,15 @@ exports.generateCourse = async (req, res) => {
       title: aiData.title,
       description: aiData.description,
       modules: moduleIds,
-      creator: "temp_user_id", // Placeholder until we have auth
+      creator: "temp_user_id", // Placeholder
     });
 
-    // Populate the course to send it back full
+    // Populate and send back
     const populatedCourse = await Course.findById(newCourse._id).populate({
       path: "modules",
       populate: {
         path: "lessons",
+        model: "Lesson",
       },
     });
 
@@ -70,7 +71,7 @@ exports.getCourseById = async (req, res) => {
       path: "modules",
       populate: {
         path: "lessons",
-        model: "Lesson", // Explicitly state model
+        model: "Lesson",
       },
     });
 

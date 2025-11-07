@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from "react";
 import {useParams, Link} from "react-router-dom";
 import axios from "axios";
-import "./CourseOverviewPage.css"; // We'll create this file
+import "./CourseOverviewPage.css";
 
 const CourseOverviewPage = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const {courseId} = useParams(); // Get the ID from the URL
+  const {courseId} = useParams();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -35,6 +35,11 @@ const CourseOverviewPage = () => {
 
   return (
     <div className="course-overview">
+      {/* ✅ Add breadcrumb navigation */}
+      <Link to="/my-courses" className="breadcrumb-link">
+        &larr; Back to Courses
+      </Link>
+
       <h1>{course.title}</h1>
       <p className="course-description">{course.description}</p>
 
@@ -45,7 +50,10 @@ const CourseOverviewPage = () => {
             <ul className="lessons-list">
               {module.lessons.map((lesson) => (
                 <li key={lesson._id}>
-                  <Link to={`/lesson/${lesson._id}`}>{lesson.title}</Link>
+                  {/* Pass the course object via Link state */}
+                  <Link to={`/lesson/${lesson._id}`} state={{course: course}}>
+                    {lesson.title}
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -1,17 +1,12 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
+import "./TextBlock.css"; // We'll add this for styling
 
 const TextBlock = ({content}) => {
   return (
-    <p
-      style={{
-        lineHeight: "1.7",
-        fontSize: "1.125rem", // Larger font
-        color: "#2d3748", // Darker text
-        margin: "1.5em 0", // Better spacing
-      }}
-    >
-      {content}
-    </p>
+    <div className="text-block-container">
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </div>
   );
 };
 
