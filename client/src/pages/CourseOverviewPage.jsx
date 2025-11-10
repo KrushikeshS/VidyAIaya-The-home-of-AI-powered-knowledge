@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {useParams, Link} from "react-router-dom";
 import axios from "axios";
+import {useAuth0} from "@auth0/auth0-react"; // 🔧 CHANGED
 import "./CourseOverviewPage.css";
 
 const CourseOverviewPage = () => {
@@ -8,26 +9,42 @@ const CourseOverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const {courseId} = useParams();
+  const {getAccessTokenSilently} = useAuth0(); // 🔧 CHANGED
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
+
+        // 🔧 CHANGED: always fetch an access token and normalize it to a string
+        const tr = await getAccessTokenSilently({
+          authorizationParams: {audience: import.meta.env.VITE_AUTH0_AUDIENCE},
+          detailedResponse: true,
+        });
+        const accessToken = typeof tr === "string" ? tr : tr?.access_token;
+
         const response = await axios.get(
-          `http://localhost:5001/api/courses/${courseId}`
+          `${import.meta.env.VITE_API_URL}/courses/${courseId}`,
+          {
+            headers: {Authorization: `Bearer ${accessToken}`}, // 🔧 CHANGED
+          }
         );
+
         if (response.data.success) {
           setCourse(response.data.data);
+        } else {
+          setError(response?.data?.message || "Failed to fetch course.");
         }
+
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch course.");
+        setError(err?.response?.data?.message || "Failed to fetch course."); // 🔧 CHANGED
         setLoading(false);
       }
     };
 
     fetchCourse();
-  }, [courseId]);
+  }, [courseId, getAccessTokenSilently]); // 🔧 CHANGED
 
   if (loading) return <div>Loading course...</div>;
   if (error) return <div className="error-message">{error}</div>;
@@ -35,7 +52,6 @@ const CourseOverviewPage = () => {
 
   return (
     <div className="course-overview">
-      {/* ✅ Add breadcrumb navigation */}
       <Link to="/my-courses" className="breadcrumb-link">
         &larr; Back to Courses
       </Link>
@@ -44,21 +60,31 @@ const CourseOverviewPage = () => {
       <p className="course-description">{course.description}</p>
 
       <div className="modules-list">
-        {course.modules.map((module) => (
-          <div key={module._id} className="module-card">
-            <h2>{module.title}</h2>
-            <ul className="lessons-list">
-              {module.lessons.map((lesson) => (
-                <li key={lesson._id}>
-                  {/* Pass the course object via Link state */}
-                  <Link to={`/lesson/${lesson._id}`} state={{course: course}}>
-                    {lesson.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {(course.modules || []).map(
+          (
+            module // 🔧 CHANGED: guard
+          ) => (
+            <div key={module._id} className="module-card">
+              <h2>{module.title}</h2>
+              <ul className="lessons-list">
+                {(module.lessons || []).map(
+                  (
+                    lesson // 🔧 CHANGED: guard
+                  ) => (
+                    <li key={lesson._id}>
+                      <Link
+                        to={`/lesson/${lesson._id}`}
+                        state={{course: course}}
+                      >
+                        {lesson.title}
+                      </Link>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          )
+        )}
       </div>
     </div>
   );

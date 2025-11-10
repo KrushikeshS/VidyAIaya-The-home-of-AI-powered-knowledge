@@ -1,0 +1,45 @@
+.my-courses-page h1 {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.course-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.course-card-link {
+  text-decoration: none;
+}
+
+.course-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.course-card h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin: 0 0 10px 0;
+}
+
+.course-card p {
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.course-modules {
+  font-weight: 600;
+  color: var(--primary);
+}

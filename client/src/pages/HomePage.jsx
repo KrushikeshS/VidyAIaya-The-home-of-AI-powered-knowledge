@@ -1,17 +1,31 @@
 import React, {useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import "./HomePage.css"; // We'll create this file
+import {useAuth0} from "@auth0/auth0-react";
+import "./HomePage.css";
 
 const HomePage = () => {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const {getAccessTokenSilently, loginWithRedirect, isAuthenticated} =
+    useAuth0();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!topic) {
+
+    if (!isAuthenticated) {
+      await loginWithRedirect({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: "openid profile email offline_access",
+        },
+      });
+      return;
+    }
+
+    if (!topic.trim()) {
       setError("Please enter a topic.");
       return;
     }
@@ -20,24 +34,51 @@ const HomePage = () => {
     setError("");
 
     try {
-      // This is the API call to your backend!
+      // ✅ always request a detailed response
+      let tokenResp;
+      try {
+        tokenResp = await getAccessTokenSilently({
+          authorizationParams: {audience: import.meta.env.VITE_AUTH0_AUDIENCE},
+          detailedResponse: true,
+        });
+      } catch (err) {
+        // fallback if silent fails
+        tokenResp = await window.__AUTH0__?.getAccessTokenWithPopup?.({
+          authorizationParams: {audience: import.meta.env.VITE_AUTH0_AUDIENCE},
+          detailedResponse: true,
+        });
+      }
+
+      // ✅ normalize token to string
+      const accessToken =
+        typeof tokenResp === "string" ? tokenResp : tokenResp?.access_token;
+
+      // ✅ validate token format (must contain 2 dots)
+      if (!accessToken || (accessToken.match(/\./g) || []).length !== 2) {
+        console.error("Invalid or empty token:", accessToken?.slice?.(0, 20));
+        setError("Login again to grant API access (invalid token).");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ make API request
       const response = await axios.post(
-        "http://localhost:5001/api/courses/generate",
-        {
-          topic: topic,
-        }
+        `${import.meta.env.VITE_API_URL}/courses/generate`,
+        {topic},
+        {headers: {Authorization: `Bearer ${accessToken}`}}
       );
 
       setLoading(false);
 
       if (response.data && response.data.success) {
-        // Success! Navigate to the new course page
         navigate(`/course/${response.data.data._id}`);
+      } else {
+        setError(response?.data?.message || "Unexpected server response.");
       }
     } catch (err) {
+      console.error("Submit error:", err);
       setLoading(false);
       setError("Failed to generate course. Please try again.");
-      console.error(err);
     }
   };
 
@@ -47,6 +88,7 @@ const HomePage = () => {
       <p>
         Enter any topic you want to learn, and let AI build a course for you.
       </p>
+
       <form onSubmit={handleSubmit} className="prompt-form">
         <input
           type="text"
@@ -59,6 +101,7 @@ const HomePage = () => {
           {loading ? "Generating..." : "Generate Course"}
         </button>
       </form>
+
       {error && <p className="error-message">{error}</p>}
     </div>
   );
