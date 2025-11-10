@@ -5,20 +5,42 @@ const contentBlockSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["text", "code", "video", "quiz"],
+    // Add all the new types from your AI prompt
+    enum: [
+      "text",
+      "code",
+      "video",
+      "quiz",
+      "heading", // <-- New
+      "list", // <-- New
+      "callout", // <-- New
+      "exercise", // <-- New
+    ],
   },
   content: {
-    type: String,
+    // This is the key: Mixed allows it to be a String OR an Array
+    type: mongoose.Schema.Types.Mixed,
     required: true,
   },
-  // Optional: for 'code' type
+  // --- Optional fields for specific types ---
   language: {
-    type: String,
+    type: String, // for 'code'
   },
-  // Optional: for 'quiz' type
-  options: [String],
+  options: [String], // for 'quiz'
   correctAnswer: {
-    type: String,
+    type: String, // for 'quiz'
+  },
+  explanation: {
+    type: String, // for 'quiz'
+  },
+  calloutType: {
+    type: String, // for 'callout' (e.g., "info", "warning")
+  },
+  listType: {
+    type: String, // for 'list' (e.g., "bullet", "numbered")
+  },
+  hint: {
+    type: String, // for 'exercise'
   },
 });
 
@@ -27,6 +49,10 @@ const lessonSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Lesson title is required"],
+    },
+    // The new outline prompt adds a description
+    description: {
+      type: String,
     },
     content: [contentBlockSchema], // An array of content blocks
   },

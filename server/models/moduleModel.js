@@ -6,6 +6,10 @@ const moduleSchema = new mongoose.Schema(
       type: String,
       required: [true, "Module title is required"],
     },
+    // Add this new field
+    description: {
+      type: String,
+    },
     lessons: [
       {
         type: mongoose.Schema.Types.ObjectId,

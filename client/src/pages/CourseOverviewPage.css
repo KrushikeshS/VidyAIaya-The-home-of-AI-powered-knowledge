@@ -59,3 +59,53 @@
 .breadcrumb-link:hover {
   color: var(--primary);
 }
+
+.target-audience {
+  display: inline-block;
+  background-color: #e6f7ff;
+  color: #096dd9;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.course-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.course-detail-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.course-detail-card h3 {
+  margin-top: 0;
+  color: var(--text-dark);
+}
+
+.course-detail-card ul {
+  padding-left: 20px;
+}
+
+.course-detail-card li {
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.module-description {
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .course-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

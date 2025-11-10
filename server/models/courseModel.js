@@ -10,13 +10,22 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: [true, "Course description is required"],
     },
+    // Add these new fields
+    targetAudience: {
+      type: String,
+    },
+    prerequisites: {
+      type: [String], // An array of strings
+    },
+    learningOutcomes: {
+      type: [String], // An array of strings
+    },
     modules: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Module",
       },
     ],
-    // We'll link this to a real user after we add authentication
     creator: {
       type: String,
       required: true,
