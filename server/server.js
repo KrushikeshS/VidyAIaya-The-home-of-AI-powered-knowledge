@@ -9,6 +9,7 @@ const connectDB = require("./config/db");
 // Import routes
 const courseRoutes = require("./routes/courseRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
+const videoRoutes = require("./routes/videoRoutes");
 
 // Connect to Database
 connectDB();
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 // Mount routers
 app.use("/api/courses", courseRoutes);
 app.use("/api/lessons", lessonRoutes);
+app.use("/api/video", videoRoutes);
 
 const PORT = process.env.PORT || 5000;
 

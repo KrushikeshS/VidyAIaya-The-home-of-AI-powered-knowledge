@@ -1,29 +1,66 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import axios from "axios";
+import {useAuth0} from "@auth0/auth0-react";
+import "./VideoBlock.css"; // We'll create this
 
 const VideoBlock = ({content}) => {
+  // 'content' is the search query from the AI (e.g., "React Hooks explained")
+  const [videoId, setVideoId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const {getAccessTokenSilently} = useAuth0();
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
+
+        // Call our new backend endpoint
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/video/search`,
+          {
+            params: {query: content}, // Pass the search query
+            headers: {Authorization: `Bearer ${token}`},
+          }
+        );
+
+        if (response.data.success) {
+          setVideoId(response.data.videoId);
+        }
+      } catch (err) {
+        console.error("Failed to fetch video", err);
+        setError("Could not load video.");
+      }
+      setLoading(false);
+    };
+
+    fetchVideo();
+  }, [content, getAccessTokenSilently]); // Re-run if the search query changes
+
+  if (loading) {
+    return <div className="video-placeholder">Loading video...</div>;
+  }
+
+  if (error) {
+    return <div className="video-placeholder error">{error}</div>;
+  }
+
   return (
-    <div
-      style={{
-        margin: "24px 0",
-        padding: "24px",
-        background: "#f7fafc", // Light background
-        border: "1px solid #e2e8f0", // Border
-        borderRadius: "8px",
-      }}
-    >
-      <strong
-        style={{
-          display: "block",
-          marginBottom: "8px",
-          fontSize: "1rem",
-          color: "#2d3748",
-        }}
-      >
-        Suggested Video:
-      </strong>
-      <p style={{margin: 0, fontStyle: "italic", color: "#718096"}}>
-        A video on "{content}" will appear here in Phase 5.
-      </p>
+    <div className="video-container">
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
     </div>
   );
 };
