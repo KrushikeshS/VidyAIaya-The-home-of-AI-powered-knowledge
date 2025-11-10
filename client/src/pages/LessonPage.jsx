@@ -35,7 +35,7 @@ const LessonPage = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:5001/api/lessons/${lessonId}`
+          `${import.meta.env.VITE_API_URL}/lessons/${lessonId}`
         );
         if (response.data.success) {
           setLesson(response.data.data);

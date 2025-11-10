@@ -79,3 +79,44 @@
     padding: 20px;
   }
 }
+
+.sidebar-footer {
+  margin-top: auto; /* Pushes to the bottom */
+  padding-top: 20px;
+  border-top: 1px solid #2d3748;
+}
+
+.auth-button {
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.auth-button:hover {
+  background-color: #2b6cb0;
+}
+
+.user-profile {
+  text-align: center;
+  color: white;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.user-name {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
