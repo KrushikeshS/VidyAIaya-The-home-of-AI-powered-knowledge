@@ -1,8 +1,8 @@
 const express = require("express");
 const Lesson = require("../models/lessonModel");
-const Course = require("../models/courseModel"); // We need this
+const Module = require("../models/moduleModel");
+const Course = require("../models/courseModel");
 const {generateLessonContent} = require("../services/aiService");
-
 const router = express.Router();
 
 // @desc    Get a single lesson by its ID
@@ -18,45 +18,49 @@ router.get("/:id", async (req, res) => {
     }
 
     // --- LAZY GENERATION LOGIC ---
-    // Check if the content array is empty
     if (!lesson.content || lesson.content.length === 0) {
       console.log(`Content for '${lesson.title}' is empty. Generating...`);
 
-      // Find the course this lesson belongs to
-      const course = await Course.findOne({"modules.lessons": req.params.id});
-      const courseTitle = course ? course.title : "a technology course"; // Fallback
+      // 1. Find the context (Module and Course)
+      const module = await Module.findOne({lessons: req.params.id});
+      const course = await Course.findOne({modules: module._id});
 
-      // 1. Generate new content from the AI
-      const aiContent = await generateLessonContent(lesson.title, courseTitle);
+      const moduleTitle = module ? module.title : "";
+      const courseTitle = course ? course.title : "";
+      const targetAudience = course ? course.targetAudience : "beginner";
+
+      // 2. Generate new content with all the context
+      const aiContent = await generateLessonContent(
+        lesson.title,
+        lesson.description,
+        moduleTitle,
+        courseTitle,
+        {targetAudience: targetAudience}
+      );
 
       try {
-        // 2. Update the lesson in the database
-        // We set the content on the document we already fetched
+        // 3. Update the lesson in the database
         lesson.content = aiContent.content;
-        await lesson.save(); // This save uses the internal version __v
-
-        console.log("Content generated and saved by this request.");
+        await lesson.save();
+        console.log("Content generated and saved.");
       } catch (e) {
         if (e.name === "VersionError") {
-          // This is NOT a real error. It just means the *other* request
-          // won the race and saved the content first.
           console.log(
             "VersionError: Another request already saved. Fetching new content."
           );
-
-          // We simply re-fetch the lesson, which now has the content.
           lesson = await Lesson.findById(req.params.id);
         } else {
-          // If it's some other error, re-throw it
-          throw e;
+          // This is where your error is happening!
+          console.error("Error saving lesson:", e);
+          throw e; // Re-throw to be caught by the outer block
         }
       }
     }
     // --- End of logic ---
 
-    // 3. Return the (now populated) lesson
     res.status(200).json({success: true, data: lesson});
   } catch (error) {
+    // This will now catch the validation error from above
     console.error("Error in getLessonById:", error);
     res.status(500).json({success: false, error: "Server Error"});
   }

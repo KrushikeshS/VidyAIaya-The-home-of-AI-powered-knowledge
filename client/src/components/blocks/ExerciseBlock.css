@@ -1,0 +1,28 @@
+.exercise-block {
+  background: #fafafa;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 24px;
+  margin: 1.5em 0;
+}
+.exercise-block h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-dark);
+}
+
+/* Style the markdown p tags directly inside the block
+  */
+.exercise-block > p {
+  margin: 0 0 10px 0;
+}
+
+/* Style the hint wrapper and the p tag inside it
+  */
+.exercise-hint-wrapper {
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 15px;
+}
+.exercise-hint-wrapper p {
+  margin: 0;
+}

@@ -1,0 +1,12 @@
+.list-block {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  margin: 1.5em 0;
+  padding-left: 30px;
+}
+.list-block li {
+  margin-bottom: 10px;
+}
+.list-block li p {
+  margin: 0;
+}

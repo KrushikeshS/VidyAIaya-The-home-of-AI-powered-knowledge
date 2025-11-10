@@ -20,17 +20,28 @@ async function generateCourse(req, res) {
   }
 
   try {
-    // Try AI outline; if it fails, fall back to a minimal outline
     let outline;
     try {
-      outline = await generateCourseOutline(topic);
-    } catch {
+      // Call the new AI service with options
+      outline = await generateCourseOutline(topic, {
+        targetAudience: "beginner", // We can make this dynamic later
+      });
+    } catch (aiError) {
+      console.error("AI Outline generation failed, using fallback:", aiError);
+      // Your team's robust fallback
       outline = {
         title: topic.trim(),
         description: `Auto-generated course on ${topic}`,
         modules: [
-          {title: "Introduction", lessons: [{title: "Welcome & Setup"}]},
+          {
+            title: "Introduction",
+            description: "Welcome to the course",
+            lessons: [{title: "Welcome & Setup", description: "Get started"}],
+          },
         ],
+        prerequisites: [],
+        learningOutcomes: ["Learn the basics"],
+        targetAudience: "beginner",
       };
     }
 
@@ -40,24 +51,31 @@ async function generateCourse(req, res) {
       for (const l of m.lessons || []) {
         const lesson = await Lesson.create({
           title: l.title,
-          content: l.content || [], // keep your shape
+          description: l.description, // <-- NEW: Save lesson description
+          content: [], // Content is still generated lazily
         });
         lessonIds.push(lesson._id);
       }
       const mod = await Module.create({
         title: m.title,
+        description: m.description, // <-- NEW: Save module description
         lessons: lessonIds,
       });
       moduleIds.push(mod._id);
     }
 
+    // Create the course with all the new, rich data
     const newCourse = await Course.create({
       title: outline.title,
       description: outline.description,
+      targetAudience: outline.targetAudience, // <-- NEW
+      prerequisites: outline.prerequisites, // <-- NEW
+      learningOutcomes: outline.learningOutcomes, // <-- NEW
       modules: moduleIds,
       creator: userId,
     });
 
+    // Your team's population logic is perfect
     const populated = await Course.findById(newCourse._id).populate({
       path: "modules",
       populate: {path: "lessons", model: "Lesson"},
@@ -66,6 +84,16 @@ async function generateCourse(req, res) {
     return res.status(201).json({success: true, data: populated});
   } catch (error) {
     console.error("Error in generateCourse:", error);
+    // This will catch any validation errors if the schemas aren't updated
+    if (error.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Validation Error",
+          errors: error.errors,
+        });
+    }
     return res.status(500).json({success: false, message: "Server error"});
   }
 }

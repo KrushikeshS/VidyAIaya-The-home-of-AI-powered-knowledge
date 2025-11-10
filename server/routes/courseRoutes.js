@@ -6,13 +6,13 @@ const checkJwt = require("../middleware/authMiddleware"); // 👈 default export
 const controller = require("../controllers/courseController"); // import the whole module
 
 // Runtime asserts to catch bad imports immediately
-console.log("[routes] typeof checkJwt:", typeof checkJwt);
-console.log(
-  "[routes] typeof generateCourse:",
-  typeof controller.generateCourse
-);
-console.log("[routes] typeof getCourseById:", typeof controller.getCourseById);
-console.log("[routes] typeof getMyCourses:", typeof controller.getMyCourses);
+// console.log("[routes] typeof checkJwt:", typeof checkJwt);
+// console.log(
+//   "[routes] typeof generateCourse:",
+//   typeof controller.generateCourse
+// );
+// console.log("[routes] typeof getCourseById:", typeof controller.getCourseById);
+// console.log("[routes] typeof getMyCourses:", typeof controller.getMyCourses);
 
 if (typeof checkJwt !== "function")
   throw new Error("checkJwt is not a function export");
