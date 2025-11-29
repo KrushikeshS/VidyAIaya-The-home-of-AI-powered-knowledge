@@ -2,74 +2,16 @@ import React, {useState, useEffect} from "react";
 import {useParams, Link} from "react-router-dom";
 import axios from "axios";
 import {useAuth0} from "@auth0/auth0-react";
-import "./CourseOverviewPage.css"; // This CSS file will need updates
-
-// This is the accordion component from your team's code
-// (I've included it here for completeness)
-const ModuleAccordion = ({module, course}) => {
-  const [lessons, setLessons] = useState(module.lessons || []);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const {getAccessTokenSilently} = useAuth0();
-
-  const handleToggle = async () => {
-    if (isOpen) {
-      setIsOpen(false);
-      return;
-    }
-
-    setIsOpen(true);
-    // Only fetch if lessons are just IDs (not populated)
-    // Your team's code might already populate them. This logic handles both.
-    if (lessons.length > 0 && typeof lessons[0] === "string") {
-      setIsLoading(true);
-      try {
-        // This logic might need to be adapted to your team's new GET /api/modules/:id
-        // For now, I'll assume the lessons are populated.
-        // If not, we'd add the axios call here.
-      } catch (err) {
-        console.error("Failed to fetch lessons", err);
-      }
-      setIsLoading(false);
-    }
-  };
-
-  // This part assumes your 'course' object has populated modules AND lessons
-  // from the start, as your team's 'generateCourse' controller seems to do.
-  return (
-    <div className="module-card">
-      <h2 onClick={handleToggle} style={{cursor: "pointer"}}>
-        {module.title}
-        <span>{isOpen ? "▲" : "▼"}</span>
-      </h2>
-      {isOpen && (
-        <div className="lessons-list">
-          {isLoading ? (
-            <p>Loading lessons...</p>
-          ) : (
-            <ul>
-              {module.lessons.map((lesson) => (
-                <li key={lesson._id}>
-                  <Link
-                    to={`/lesson/${lesson._id}`}
-                    state={{course: course}} // Pass the course context
-                  >
-                    {lesson.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+import {ArrowLeft, BookOpen, Star, Target, FileText} from "lucide-react";
+import CourseMap from "../components/CourseMap"; 
+import CheatSheetModal from "../components/CheatSheetModal"; // Import Modal
+import "./CourseOverviewPage.css";
 
 const CourseOverviewPage = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showCheatSheet, setShowCheatSheet] = useState(false); // State for modal
   const {courseId} = useParams();
   const {getAccessTokenSilently, isAuthenticated} = useAuth0();
 
@@ -78,11 +20,7 @@ const CourseOverviewPage = () => {
       if (!isAuthenticated) return;
       try {
         setLoading(true);
-        const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          },
-        });
+        const token = await getAccessTokenSilently();
 
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/courses/${courseId}`,
@@ -110,17 +48,41 @@ const CourseOverviewPage = () => {
   return (
     <div className="course-overview">
       <Link to="/my-courses" className="breadcrumb-link">
-        &larr; Back to My Courses
+        <ArrowLeft size={16} style={{ marginRight: "8px" }} />
+        Back to My Courses
       </Link>
 
-      <h1>{course.title}</h1>
-      <p className="course-description">{course.description}</p>
-      <span className="target-audience">For {course.targetAudience}</span>
+      <div className="course-header-section">
+        <h1>{course.title}</h1>
+        <p className="course-description">{course.description}</p>
+        
+        <div className="header-meta-row">
+          {course.targetAudience && (
+            <span className="target-audience">
+              <Target size={16} style={{ marginRight: "8px", verticalAlign: "text-bottom" }} />
+              For {course.targetAudience}
+            </span>
+          )}
+          
+          {/* Cheat Sheet Button */}
+          <button 
+            className="cheat-sheet-btn"
+            onClick={() => setShowCheatSheet(true)}
+          >
+            <FileText size={16} /> Download Cheat Sheet
+          </button>
+        </div>
+      </div>
 
-      {/* --- NEW SECTIONS --- */}
-      <div className="course-details-grid">
+      <h2 className="modules-section-title">Your Journey</h2>
+      <CourseMap course={course} />
+
+      <div className="course-details-grid" style={{marginTop: "60px"}}>
         <div className="course-detail-card">
-          <h3>What You'll Learn</h3>
+          <h3>
+            <Star size={20} />
+            What You'll Learn
+          </h3>
           <ul>
             {course.learningOutcomes?.map((outcome, i) => (
               <li key={i}>{outcome}</li>
@@ -128,7 +90,10 @@ const CourseOverviewPage = () => {
           </ul>
         </div>
         <div className="course-detail-card">
-          <h3>Prerequisites</h3>
+          <h3>
+            <BookOpen size={20} />
+            Prerequisites
+          </h3>
           <ul>
             {course.prerequisites?.map((prereq, i) => (
               <li key={i}>{prereq}</li>
@@ -136,28 +101,14 @@ const CourseOverviewPage = () => {
           </ul>
         </div>
       </div>
-      {/* --- END NEW SECTIONS --- */}
 
-      <h2>Course Content</h2>
-      <div className="modules-list">
-        {course.modules.map((module) => (
-          // This assumes your team's `generateCourse` populates lessons
-          // If not, you may need the old `ModuleAccordion` logic
-          <div key={module._id} className="module-card">
-            <h2>{module.title}</h2>
-            <p className="module-description">{module.description}</p>
-            <ul className="lessons-list">
-              {module.lessons.map((lesson) => (
-                <li key={lesson._id}>
-                  <Link to={`/lesson/${lesson._id}`} state={{course: course}}>
-                    {lesson.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+      {/* Render Modal */}
+      {showCheatSheet && (
+        <CheatSheetModal 
+          course={course} 
+          onClose={() => setShowCheatSheet(false)} 
+        />
+      )}
     </div>
   );
 };

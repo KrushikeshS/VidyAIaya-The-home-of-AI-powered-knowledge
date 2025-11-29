@@ -1,63 +1,163 @@
 .homepage {
-  max-width: 800px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.hero-icon {
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
 .homepage h1 {
-  font-size: 2.5rem;
-  color: var(--text-dark);
+  font-size: 3.5rem;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .homepage p {
-  font-size: 1.125rem;
-  color: var(--text-muted);
-  margin-bottom: 24px;
+  font-size: 1.5rem;
+  color: var(--text-light);
+  margin-bottom: 48px;
+  max-width: 600px;
+  line-height: 1.5;
 }
 
 .prompt-form {
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
   display: flex;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
+  align-items: center;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 24px; /* Pill shape */
+  padding: 8px;
+  box-shadow: 0 8px 0 var(--border);
+  transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 0 var(--border);
 }
 
 .prompt-input {
   flex-grow: 1;
-  font-size: 1rem;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px 0 0 8px;
+  font-size: 1.25rem;
+  padding: 16px 24px;
+  border: none;
   outline: none;
-  transition: border-color 0.2s ease;
+  background: transparent;
+  color: var(--text-main);
+  font-weight: 600;
+  width: 100%;
 }
 
-.prompt-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+.prompt-input::placeholder {
+  color: #CBD5E0;
 }
 
 .prompt-button {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 16px 24px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 20px; /* Pill shape matches wrapper */
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .prompt-button:hover {
-  background-color: #2b6cb0; /* Darker blue */
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.prompt-button:active {
+  transform: scale(0.98);
 }
 
 .prompt-button:disabled {
-  background-color: #a0aec0; /* Muted grey */
+  background-color: var(--bg-offset);
+  color: var(--text-light);
   cursor: not-allowed;
+  transform: none;
 }
 
 .error-message {
-  color: #e53e3e; /* Red */
-  margin-top: 15px;
-  font-weight: 500;
+  color: var(--danger);
+  margin-top: 32px;
+  font-weight: 700;
+  background-color: #FFF5F5;
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  border: 2px solid #FED7D7;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .homepage h1 {
+    font-size: 2.5rem;
+  }
+  
+  .homepage p {
+    font-size: 1.2rem;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .prompt-input {
+    padding: 0;
+    text-align: center;
+  }
+
+  .prompt-button {
+    width: 100%;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+  }
 }

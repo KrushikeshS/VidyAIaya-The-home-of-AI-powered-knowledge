@@ -12,6 +12,8 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.8.0",
     "axios": "^1.13.1",
+    "canvas-confetti": "^1.9.4",
+    "lucide-react": "^0.555.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",

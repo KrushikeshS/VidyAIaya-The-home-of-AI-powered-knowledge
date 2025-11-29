@@ -1,12 +1,21 @@
 .list-block {
   font-size: 1.125rem;
-  line-height: 1.7;
-  margin: 1.5em 0;
-  padding-left: 30px;
+  line-height: 1.8;
+  margin: 32px 0;
+  padding-left: 24px;
+  color: var(--text-main);
 }
+
 .list-block li {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding-left: 8px;
 }
+
+.list-block li::marker {
+  color: var(--secondary);
+  font-weight: bold;
+}
+
 .list-block li p {
   margin: 0;
 }

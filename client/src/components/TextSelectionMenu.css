@@ -1,0 +1,217 @@
+.magic-menu-container {
+  position: absolute;
+  transform: translateX(-50%); /* Center horizontally */
+  z-index: 1000;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+}
+
+.magic-menu-container.top {
+  transform: translate(-50%, -100%); /* Move up by 100% of its height */
+  animation: popInTop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.magic-menu-container.bottom {
+  transform: translate(-50%, 0); /* Stay below */
+  animation: popInBottom 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popInTop {
+  from { opacity: 0; transform: translate(-50%, -90%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+@keyframes popInBottom {
+  from { opacity: 0; transform: translate(-50%, -10%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.magic-menu-options {
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--border);
+}
+
+.magic-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.magic-btn:hover {
+  background-color: var(--bg-offset);
+  color: var(--primary);
+}
+
+.magic-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--border);
+  margin: 0 2px;
+}
+
+.magic-arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: white;
+  z-index: -1;
+}
+
+.magic-menu-container.top .magic-arrow {
+  bottom: -6px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.magic-menu-container.bottom .magic-arrow {
+  top: -6px;
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+}
+
+/* Result Card Styles */
+.magic-result-card {
+  background: white;
+  border-radius: 16px;
+  width: 320px;
+  border: 2px solid var(--primary);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(28, 176, 246, 0.15);
+}
+
+.magic-result-header {
+  background: var(--bg-offset);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.magic-ai-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(28, 176, 246, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.magic-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+}
+
+.magic-close-btn:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--danger);
+}
+
+.magic-result-body {
+  padding: 16px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  min-height: 80px;
+}
+
+.magic-result-body p {
+  margin-bottom: 8px;
+}
+
+.magic-result-body strong {
+  color: var(--primary);
+}
+
+/* Mini Quiz Styles */
+.mini-quiz-question {
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.mini-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-quiz-option {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.mini-quiz-option:hover:not(:disabled) {
+  background-color: var(--bg-offset);
+  border-color: var(--secondary);
+}
+
+.mini-quiz-option.correct {
+  background-color: #F0FFF4;
+  border-color: #48BB78;
+  color: #2F855A;
+}
+
+.mini-quiz-option.incorrect {
+  background-color: #FFF5F5;
+  border-color: #F56565;
+  color: #C53030;
+}
+
+/* Loader */
+.magic-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 20px 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}

@@ -1,0 +1,170 @@
+.course-map-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Phone/Tablet width ideal for maps */
+  margin: 0 auto;
+  padding: 40px 20px 100px 20px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The SVG Line Background */
+.map-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.path-line-bg {
+  stroke: var(--border);
+  stroke-width: 12px;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.path-line-progress {
+  stroke: var(--primary); /* Duolingo Green */
+  stroke-width: 12px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 10000;
+  stroke-dashoffset: 10000;
+  transition: stroke-dashoffset 1s ease;
+}
+
+/* Unit Headers */
+.unit-header {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--secondary);
+  color: white;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  z-index: 1;
+  box-shadow: 0 4px 0 var(--secondary-shade);
+  width: max-content;
+  text-align: center;
+}
+
+/* The Lesson Node */
+.lesson-node {
+  position: absolute;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The Button Circle */
+.node-button {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 2;
+}
+
+/* STATUS: LOCKED */
+.node-button.locked {
+  background-color: var(--bg-offset);
+  border: 2px solid var(--border);
+  color: var(--text-light);
+  cursor: not-allowed;
+  box-shadow: 0 4px 0 var(--border);
+}
+
+/* STATUS: COMPLETED */
+.node-button.completed {
+  background-color: var(--primary); /* Green */
+  color: white;
+  box-shadow: 0 6px 0 var(--primary-shade);
+}
+.node-button.completed:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--primary-shade);
+}
+
+/* STATUS: CURRENT (The one you are on) */
+.node-button.current {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 6px 0 var(--primary-shade);
+  animation: pulse-ring 2s infinite;
+}
+
+/* The Star Crown for completed nodes */
+.node-stars {
+  position: absolute;
+  top: -10px;
+  display: flex;
+  gap: 2px;
+}
+
+/* Tooltip for Lesson Title */
+.node-tooltip {
+  position: absolute;
+  top: -45px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.lesson-node:hover .node-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* The Mascot Avatar */
+.mascot-avatar {
+  position: absolute;
+  top: -50px; /* Stand on top of the node */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  z-index: 5;
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
+  animation: bounce-mascot 2s infinite ease-in-out;
+}
+
+@keyframes bounce-mascot {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-10px); }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(88, 204, 2, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(88, 204, 2, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(88, 204, 2, 0); }
+}

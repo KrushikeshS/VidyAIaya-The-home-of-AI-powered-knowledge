@@ -4,6 +4,8 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {Auth0Provider} from "@auth0/auth0-react";
 // import App from "./App.jsx";
 import "./index.css";
+import {GamificationProvider} from "./context/GamificationContext";
+import {ProgressProvider} from "./context/ProgressContext"; // Import Provider
 
 // Import your layout and pages
 import Layout from "./components/Layout.jsx";
@@ -50,7 +52,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       cacheLocation="localstorage" // ✅ helps on localhost
       useRefreshTokens // ✅ modern silent auth
     >
-      <RouterProvider router={router} />
+      <GamificationProvider>
+        <ProgressProvider>
+          <RouterProvider router={router} />
+        </ProgressProvider>
+      </GamificationProvider>
     </Auth0Provider>
   </React.StrictMode>
 );
