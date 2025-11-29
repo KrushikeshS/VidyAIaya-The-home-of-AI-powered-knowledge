@@ -1,28 +1,38 @@
 .exercise-block {
-  background: #fafafa;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 24px;
-  margin: 1.5em 0;
+  margin: 32px 0;
+  box-shadow: 0 4px 0 var(--border);
 }
+
 .exercise-block h4 {
-  margin: 0 0 10px 0;
-  color: var(--text-dark);
+  margin: 0 0 16px 0;
+  color: var(--text-main);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Style the markdown p tags directly inside the block
-  */
+/* Style the markdown p tags directly inside the block */
 .exercise-block > p {
-  margin: 0 0 10px 0;
+  margin: 0 0 16px 0;
+  color: var(--text-main);
+  line-height: 1.6;
 }
 
-/* Style the hint wrapper and the p tag inside it
-  */
+/* Style the hint wrapper and the p tag inside it */
 .exercise-hint-wrapper {
   font-style: italic;
-  color: var(--text-muted);
-  margin-top: 15px;
+  color: var(--text-light);
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--border);
+  font-size: 0.95rem;
 }
+
 .exercise-hint-wrapper p {
   margin: 0;
 }

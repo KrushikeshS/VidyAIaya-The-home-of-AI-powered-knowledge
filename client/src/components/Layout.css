@@ -1,122 +1,174 @@
 .app-layout {
   display: flex;
   height: 100vh;
+  background-color: var(--bg-body);
 }
 
 .sidebar {
-  width: 260px;
-  background-color: var(--bg-dark); /* Dark background */
-  color: var(--text-light);
+  width: 280px;
+  background-color: var(--bg-body);
+  border-right: 2px solid var(--border);
   padding: 24px;
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .sidebar-header h2 {
-  color: var(--bg-white);
-  font-size: 1.5rem;
-  margin: 0 0 32px 0;
+  color: var(--primary);
+  font-size: 2rem;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.user-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 .sidebar-menu {
   list-style: none;
+  flex-grow: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: 8px;
 }
 
 .sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
   color: var(--text-light);
-  font-weight: 500;
-  display: block;
-  padding: 12px 16px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .sidebar-menu li a:hover {
-  background-color: #2d3748; /* Slightly lighter than the bg */
+  background-color: var(--bg-offset);
+  border-color: var(--border);
 }
 
 .main-content {
   flex-grow: 1;
   padding: 40px;
   overflow-y: auto;
-  background-color: var(--bg-light); /* Main app background */
+  background-color: var(--bg-body);
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-/* Add to the end of Layout.css */
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
+    height: auto;
   }
 
   .sidebar {
     width: 100%;
     height: auto;
+    border-right: none;
+    border-bottom: 2px solid var(--border);
     flex-direction: row;
     align-items: center;
     padding: 16px;
+    position: relative;
+    flex-wrap: wrap;
   }
 
   .sidebar-header h2 {
     margin: 0;
+    font-size: 1.5rem;
+  }
+
+  .user-stats {
+    margin: 0 0 0 20px;
+    padding: 0;
+    border: none;
+    gap: 16px;
   }
 
   .sidebar-menu {
-    display: flex;
+    display: none;
+  }
+  
+  .sidebar-footer {
     margin-left: auto;
-  }
-
-  .sidebar-menu li {
-    margin-bottom: 0;
-    margin-left: 10px;
-  }
-
-  .sidebar-menu li a {
-    padding: 8px 12px;
-  }
-
-  .main-content {
-    padding: 20px;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
 }
 
 .sidebar-footer {
-  margin-top: auto; /* Pushes to the bottom */
+  margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid #2d3748;
+  border-top: 2px solid var(--border);
 }
 
 .auth-button {
   width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
   font-size: 1rem;
-  font-weight: 600;
-  padding: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+  top: 0;
   background-color: var(--primary);
   color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 0 var(--primary-shade);
 }
 
-.auth-button:hover {
-  background-color: #2b6cb0;
+.auth-button:active {
+  top: 4px;
+  box-shadow: 0 0 0 var(--primary-shade);
 }
 
 .user-profile {
-  text-align: center;
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-main);
 }
 
 .user-avatar {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  margin-bottom: 10px;
+  border: 2px solid var(--border);
 }
 
 .user-name {
+  font-weight: 700;
+  font-size: 1rem;
   display: block;
-  margin-bottom: 15px;
-  font-weight: 500;
 }

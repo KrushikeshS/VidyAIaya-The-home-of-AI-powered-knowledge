@@ -1,7 +1,8 @@
 import React, {useState} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import axios from "axios";
+import {Sparkles, Zap, Search, AlertCircle} from "lucide-react";
 import "./HomePage.css";
 
 const HomePage = () => {
@@ -9,24 +10,14 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const {getAccessTokenSilently, loginWithRedirect, isAuthenticated} =
-    useAuth0();
+  const {getAccessTokenSilently, loginWithRedirect, isAuthenticated} = useAuth0();
 
-  const handleSubmit = async (e) => {
+  const handleGenerateCourse = async (e) => {
     e.preventDefault();
+    if (!topic.trim()) return;
 
     if (!isAuthenticated) {
-      await loginWithRedirect({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          scope: "openid profile email offline_access",
-        },
-      });
-      return;
-    }
-
-    if (!topic.trim()) {
-      setError("Please enter a topic.");
+      loginWithRedirect();
       return;
     }
 
@@ -34,75 +25,73 @@ const HomePage = () => {
     setError("");
 
     try {
-      // ✅ always request a detailed response
-      let tokenResp;
-      try {
-        tokenResp = await getAccessTokenSilently({
-          authorizationParams: {audience: import.meta.env.VITE_AUTH0_AUDIENCE},
-          detailedResponse: true,
-        });
-      } catch (err) {
-        // fallback if silent fails
-        tokenResp = await window.__AUTH0__?.getAccessTokenWithPopup?.({
-          authorizationParams: {audience: import.meta.env.VITE_AUTH0_AUDIENCE},
-          detailedResponse: true,
-        });
-      }
-
-      // ✅ normalize token to string
-      const accessToken =
-        typeof tokenResp === "string" ? tokenResp : tokenResp?.access_token;
-
-      // ✅ validate token format (must contain 2 dots)
-      if (!accessToken || (accessToken.match(/\./g) || []).length !== 2) {
-        console.error("Invalid or empty token:", accessToken?.slice?.(0, 20));
-        setError("Login again to grant API access (invalid token).");
-        setLoading(false);
-        return;
-      }
-
-      // ✅ make API request
+      const token = await getAccessTokenSilently();
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/courses/generate`,
         {topic},
-        {headers: {Authorization: `Bearer ${accessToken}`}}
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      setLoading(false);
-
-      if (response.data && response.data.success) {
+      if (response.data.success) {
         navigate(`/course/${response.data.data._id}`);
-      } else {
-        setError(response?.data?.message || "Unexpected server response.");
       }
     } catch (err) {
-      console.error("Submit error:", err);
+      console.error("Error generating course:", err);
+      setError(
+        err.response?.data?.error || "Failed to generate course. Please try again."
+      );
+    } finally {
       setLoading(false);
-      setError("Failed to generate course. Please try again.");
     }
   };
 
   return (
     <div className="homepage">
-      <h1>Create a New Course</h1>
-      <p>
-        Enter any topic you want to learn, and let AI build a course for you.
-      </p>
+      <div className="hero-icon">
+        <Sparkles size={64} color="var(--accent)" fill="var(--accent)" />
+      </div>
+      
+      <h1>What do you want to learn?</h1>
+      <p>Type a topic, and we'll build a fun, interactive course for you in seconds.</p>
 
-      <form onSubmit={handleSubmit} className="prompt-form">
-        <input
-          type="text"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder="e.g., 'Basics of React Hooks'"
-          className="prompt-input"
-        />
-        <button type="submit" disabled={loading} className="prompt-button">
-          {loading ? "Generating..." : "Generate Course"}
-        </button>
+      <form onSubmit={handleGenerateCourse} className="prompt-form">
+        <div className="input-wrapper">
+          <Search size={24} color="var(--text-light)" style={{marginLeft: "12px"}} />
+          <input
+            type="text"
+            className="prompt-input"
+            placeholder="e.g. Quantum Physics, Spanish, React.js..."
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            disabled={loading}
+          />
+          <button 
+            type="submit" 
+            className="prompt-button" 
+            disabled={loading || !topic.trim()}
+          >
+            {loading ? (
+              "Building..."
+            ) : (
+              <>
+                <Zap size={20} fill="currentColor" />
+                Generate
+              </>
+            )}
+          </button>
+        </div>
       </form>
 
-      {error && <p className="error-message">{error}</p>}
+      {error && (
+        <div className="error-message">
+          <AlertCircle size={24} />
+          {error}
+        </div>
+      )}
     </div>
   );
 };

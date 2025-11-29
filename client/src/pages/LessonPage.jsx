@@ -1,25 +1,29 @@
-import React, {useState, useEffect, useCallback} from "react"; // <-- 1. Import useCallback
+import React, {useState, useEffect, useCallback} from "react";
 import {useParams, useLocation, Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import LessonRenderer from "../components/LessonRenderer";
-import "./LessonPage.css"; // This already exists
+import TextSelectionMenu from "../components/TextSelectionMenu"; // Import the new component
+import {useGamification} from "../context/GamificationContext";
+import {useProgress} from "../context/ProgressContext";
+import "./LessonPage.css";
 
 const LessonPage = () => {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""); // We'll use this to show the error
+  const [error, setError] = useState("");
+  const {addXp, triggerConfetti} = useGamification();
+  const {markLessonCompleted} = useProgress();
 
   const {lessonId} = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const {course} = location.state || {};
 
-  // 2. Create a reusable fetch function
   const fetchLesson = useCallback(async () => {
     try {
       setLoading(true);
-      setError(""); // Clear any previous errors
-      setLesson(null); // <-- THIS IS THE FIX: Clear the old lesson
+      setError("");
+      setLesson(null);
 
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/lessons/${lessonId}`
@@ -30,13 +34,11 @@ const LessonPage = () => {
       }
     } catch (err) {
       console.error("Failed to fetch lesson:", err);
-      // This is the AI 503 error. Set a user-friendly message.
       setError("The AI model is busy. Please try again in a moment.");
     }
     setLoading(false);
-  }, [lessonId]); // It depends on lessonId
+  }, [lessonId]);
 
-  // 3. Find navigation logic (this is the same as before)
   const allLessonIds = course
     ? course.modules.flatMap((m) => m.lessons.map((l) => l._id))
     : [];
@@ -48,11 +50,10 @@ const LessonPage = () => {
       ? allLessonIds[currentLessonIndex + 1]
       : null;
 
-  // 4. Call fetchLesson on load
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchLesson();
-  }, [lessonId, fetchLesson]); // Run when lessonId changes or fetchLesson is created
+  }, [lessonId, fetchLesson]);
 
   const navigateToLesson = (id) => {
     if (id) {
@@ -60,20 +61,39 @@ const LessonPage = () => {
     }
   };
 
-  // 5. This is the new, robust rendering logic
+  const handleFinishLesson = () => {
+    // 1. Award XP
+    addXp(50); 
+    triggerConfetti();
+
+    // 2. Mark as completed in global state
+    if (course) {
+      markLessonCompleted(course._id, lessonId);
+    }
+
+    // 3. Navigate back to the MAP with auto-advance instruction
+    if (nextLessonId) {
+      navigate(`/course/${course._id}`, {
+        state: {
+          autoStartNext: nextLessonId
+        }
+      });
+    } else {
+      // Course finished!
+      navigate(`/course/${course._id}`);
+    }
+  };
+
   return (
     <div className="lesson-page">
-      {/* --- HEADER AND BREADCRUMBS --- */}
       {course && (
         <Link to={`/course/${course._id}`} className="breadcrumb-link">
           &larr; Back to Course: {course.title}
         </Link>
       )}
 
-      {/* Show title if we have it, even if loading/error */}
       <h1>{lesson ? lesson.title : "Loading lesson..."}</h1>
 
-      {/* --- RENDER STATES --- */}
       {loading && (
         <div className="lesson-loading-spinner">Loading Content...</div>
       )}
@@ -87,23 +107,26 @@ const LessonPage = () => {
         </div>
       )}
 
-      {lesson && !loading && <LessonRenderer contentBlocks={lesson.content} />}
+      {lesson && !loading && (
+        <TextSelectionMenu>
+          <LessonRenderer contentBlocks={lesson.content} />
+        </TextSelectionMenu>
+      )}
 
-      {/* --- NAVIGATION --- */}
       <div className="lesson-navigation">
         <button
           onClick={() => navigateToLesson(prevLessonId)}
           disabled={!prevLessonId}
           className="nav-button prev"
         >
-          &larr; Previous Lesson
+          &larr; Previous
         </button>
+        
         <button
-          onClick={() => navigateToLesson(nextLessonId)}
-          disabled={!nextLessonId}
+          onClick={handleFinishLesson}
           className="nav-button next"
         >
-          Next Lesson &rarr;
+          {nextLessonId ? "Complete & Continue" : "Finish Course 🏆"}
         </button>
       </div>
     </div>

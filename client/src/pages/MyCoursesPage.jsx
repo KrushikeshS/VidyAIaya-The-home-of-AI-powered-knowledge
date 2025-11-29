@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import {useAuth0} from "@auth0/auth0-react";
 import {Link} from "react-router-dom";
+import {BookOpen, Layers, Plus} from "lucide-react";
 import "./MyCoursesPage.css";
 
 const MyCoursesPage = () => {
@@ -42,11 +43,20 @@ const MyCoursesPage = () => {
 
   return (
     <div className="my-courses-page">
-      <h1>My Courses</h1>
+      <h1>
+        <BookOpen size={32} color="var(--primary)" />
+        My Courses
+      </h1>
       {courses.length === 0 ? (
-        <p>
-          You haven't created any courses yet. <Link to="/">Get started!</Link>
-        </p>
+        <div className="empty-state">
+          <p>
+            You haven't created any courses yet.
+          </p>
+          <Link to="/" className="btn btn-primary">
+            <Plus size={20} style={{ marginRight: "8px" }} />
+            Create Your First Course
+          </Link>
+        </div>
       ) : (
         <div className="course-list">
           {courses.map((course) => (
@@ -58,9 +68,12 @@ const MyCoursesPage = () => {
               <div className="course-card">
                 <h2>{course.title}</h2>
                 <p>{course.description}</p>
-                <span className="course-modules">
-                  {course.modules.length} Modules
-                </span>
+                <div style={{ marginTop: "auto" }}>
+                  <span className="course-modules">
+                    <Layers size={16} style={{ marginRight: "6px" }} />
+                    {course.modules.length} Modules
+                  </span>
+                </div>
               </div>
             </Link>
           ))}
